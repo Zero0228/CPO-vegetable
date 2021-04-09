@@ -32,4 +32,11 @@
 
 ## Conclusion
 > &emsp;The mutable version is more flexible and easier to use than the immutable version.
+> 
+
+## Updat
+> - **Zhuo Lin**: Check all functions in the immutable versions.
+>                 Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
+>                 Add filter for immutable.
+> - **Liu Fen**: 
  
