@@ -40,55 +40,88 @@
 >                 Add filter for immutable.
          
 > - **Liu Fen**:
+> 
 > 2. Fix warnings:
 > >     from collections.abc import Iterable
+> 
+> 4. Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for mutable and immutable versions.
+> >         NodeStrategy = st.builds(Node, st.one_of(st.integers(),st.text(min_size=1)), st.one_of(st.integers(),st.text(min_size=1)))
+> >         @given(st.lists(NodeStrategy))
+> >         def test_from_list_to_list(self, arr):
+> >             k = 0
+> >             for i in arr:
+> >                 arr1 = arr.copy()[k+1:]
+> >                 for j in arr1:
+> >                     if i == j:
+> >                         arr.remove(j)
+> >                 k = k + 1
+> >             if len(arr)>2:
+> >                 arr = sorted(arr)
+> >             dict_bst = Dict_bst().from_list(arr)
+> >             tmp_bst = dict_bst.to_list()
+> >             if len(arr)>0:
+> >                 for i in range(len(arr)):
+> >                     self.assertEqual(all(arr[i].key1==tmp_bst[i].key1), True)
+> >                     self.assertEqual(arr[i].value, tmp_bst[i].value)
+> >                     
+> >         @given(st.lists(NodeStrategy))
+> >         def test_monoid_identity(self, arr):
+> >             k = 0
+> >             for i in arr:
+> >                 arr1 = arr.copy()[k + 1:]
+> >                 for j in arr1:
+> >                     if i == j:
+> >                         arr.remove(j)
+> >                 k = k + 1
+> >             dict_bst = Dict_bst()
+> >             for i in arr:
+> >                 dict_bst.insert(i.key, i.value)
+> >             dict_bst_empty = dict_bst.mempty()
+> >             self.assertEqual(dict_bst.mconcat(dict_bst_empty), dict_bst)
+> >             self.assertEqual(dict_bst_empty.mconcat(dict_bst), dict_bst)
+> >             self.assertEqual(dict_bst.mconcat(dict_bst_empty), dict_bst_empty.mconcat(dict_bst))
+> >             
+> >         @given(st.lists(NodeStrategy), st.lists(NodeStrategy), st.lists(NodeStrategy))
+> >         def test_monoid_associativity(self, arr, arr1, arr2):
+> >             k = 0
+> >             for i in arr:
+> >                 arr0 = arr.copy()[k + 1:]
+> >                 for j in arr0:
+> >                     if i == j:
+> >                         arr.remove(j)
+> >                 k = k + 1
+> >             dict_bst = Dict_bst()
+> >             for i in arr:
+> >                 dict_bst.insert(i.key, i.value)
+> >             k = 0
+> >             for i in arr1:
+> >                 arr0 = arr1.copy()[k + 1:]
+> >                 for j in arr0:
+> >                     if i == j:
+> >                         arr1.remove(j)
+> >                 k = k + 1
+> >             dict_bst1 = Dict_bst()
+> >             for i in arr1:
+> >                 dict_bst1.insert(i.key, i.value)
+> >             k = 0
+> >             for i in arr2:
+> >                 arr0 = arr2.copy()[k + 1:]
+> >                 for j in arr0:
+> >                     if i == j:
+> >                         arr2.remove(j)
+> >                 k = k + 1
+> >             dict_bst2 = Dict_bst()
+> >             for i in arr2:
+> >                 dict_bst2.insert(i.key, i.value)
+> >             self.assertEqual(dict_bst.mconcat(dict_bst1).mconcat(dict_bst2), dict_bst.mconcat(dict_bst1.mconcat(dict_bst2)))
+>
+> 6. Why it is a part of Dict_bst? It should function passed from library user source code. Also for `add` and `square`.
+> >   I moved the function to the 'test_mutable.py' file.
+>
 > 8. Remove key type restriction.
 > In this part, I overloaded symbols, such as'>'/'=='/'<'(Node).
-> >         def __gt__(self, other):
-> >             l1 = len(self.key1)
-> >             l2 = len(other.key1)
-> >             if l1 > l2:
-> >                 return True
-> >             elif l1 == l2:
-> >                 flag = False
-> >                 for i in range(l1):
-> >                     if self.key1[i] == other.key1[i]:
-> >                         continue
-> >                     elif self.key1[i] < other.key1[i]:
-> >                         break
-> >                     elif self.key1[i] > other.key1[i]:
-> >                         flag = True
-> >                         break
-> >                 return flag
-> >             else:  return False
-> >             
-> >             def __eq__(self, other):
-> >                 if other == None: return None
-> >                 l1 = len(self.key1)
-> >                 l2 = len(other.key1)
-> >                 if l1 != l2: return False
-> >                 elif all(self.key1==other.key1) is True:
-> >                     return True
-> >                 else: return False
-> >                 
-> >             def __lt__(self, other):
-> >                 l1 = len(self.key1)
-> >                 l2 = len(other.key1)
-> >                 if l1 < l2:
-> >                     return True
-> >                 elif l1 == l2:
-> >                     flag = False
-> >                     for i in range(l1):
-> >                         if self.key1[i] == other.key1[i]:
-> >                             continue
-> >                         elif self.key1[i] > other.key1[i]:
-> >                             break
-> >                         elif self.key1[i] < other.key1[i]:
-> >                             flag = True
-> >                             break
-> >                     return flag
-> >                 else:
-> >                     return False
+> <div align=center><img src="./fig/1.png"/><img src="./fig/3.png"/><img src="./fig/2.png"/></div>
+> 
 > This is the changed code. Now, you can increase the key value of the string type.
 > >         def test_size(self):
 > >             dict_bst = Dict_bst()
@@ -111,5 +144,7 @@
 > >             for i in arr:
 > >                 dict_bst.insert(i.key, i.value)
 > >             self.assertEqual(dict_bst.size(), len(arr))
-> 4. Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for mutable and immutable versions.
+ 
+> 6. Why it is a part of Dict_bst? It should function passed from library user source code. Also for `add` and `square`.
+> I moved the function to the ‘test_mutable.py’ file
  
