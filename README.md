@@ -35,11 +35,13 @@
 > 
 
 ## Update
-> - **Zhuo Lin**: Check all functions in the immutable versions.
->                 Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
->                 Add filter for immutable.
+
+> - ### Zhuo Lin: 
+> >         Check all functions in the immutable versions.
+> >         Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
+> >         Add filter for immutable.
          
-> - **Liu Fen**:
+> - ### Liu Fen:
 > 
 > 2. Fix warnings:
 > >     from collections.abc import Iterable
@@ -144,7 +146,5 @@
 > >             for i in arr:
 > >                 dict_bst.insert(i.key, i.value)
 > >             self.assertEqual(dict_bst.size(), len(arr))
- 
-> 6. Why it is a part of Dict_bst? It should function passed from library user source code. Also for `add` and `square`.
-> I moved the function to the ‘test_mutable.py’ file
+
  
