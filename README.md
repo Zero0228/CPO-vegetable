@@ -38,5 +38,78 @@
 > - **Zhuo Lin**: Check all functions in the immutable versions.
 >                 Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
 >                 Add filter for immutable.
-> - **Liu Fen**: 
+         
+> - **Liu Fen**:
+> 2. Fix warnings:
+> >     from collections.abc import Iterable
+> 8. Remove key type restriction.
+> In this part, I overloaded symbols, such as'>'/'=='/'<'(Node).
+> >         def __gt__(self, other):
+> >             l1 = len(self.key1)
+> >             l2 = len(other.key1)
+> >             if l1 > l2:
+> >                 return True
+> >             elif l1 == l2:
+> >                 flag = False
+> >                 for i in range(l1):
+> >                     if self.key1[i] == other.key1[i]:
+> >                         continue
+> >                     elif self.key1[i] < other.key1[i]:
+> >                         break
+> >                     elif self.key1[i] > other.key1[i]:
+> >                         flag = True
+> >                         break
+> >                 return flag
+> >             else:  return False
+> >             
+> >             def __eq__(self, other):
+> >                 if other == None: return None
+> >                 l1 = len(self.key1)
+> >                 l2 = len(other.key1)
+> >                 if l1 != l2: return False
+> >                 elif all(self.key1==other.key1) is True:
+> >                     return True
+> >                 else: return False
+> >                 
+> >             def __lt__(self, other):
+> >                 l1 = len(self.key1)
+> >                 l2 = len(other.key1)
+> >                 if l1 < l2:
+> >                     return True
+> >                 elif l1 == l2:
+> >                     flag = False
+> >                     for i in range(l1):
+> >                         if self.key1[i] == other.key1[i]:
+> >                             continue
+> >                         elif self.key1[i] > other.key1[i]:
+> >                             break
+> >                         elif self.key1[i] < other.key1[i]:
+> >                             flag = True
+> >                             break
+> >                     return flag
+> >                 else:
+> >                     return False
+> This is the changed code. Now, you can increase the key value of the string type.
+> >         def test_size(self):
+> >             dict_bst = Dict_bst()
+> >             dict_bst.insert(1, 2)
+> >             dict_bst.insert("3", 4)
+> >             dict_bst.insert(5, None)
+> >             self.assertEqual(dict_bst.size(), 3)
+> After that, I added a system test.
+> >         NodeStrategy = st.builds(Node, st.one_of(st.integers(),st.text(min_size=1)), st.one_of(st.integers(),st.text(min_size=1)))
+> >         @given(st.lists(NodeStrategy))
+> >         def test_len_size(self, arr):
+> >             k = 0
+> >             for i in arr:
+> >                 arr1 = arr.copy()[k + 1:]
+> >                 for j in arr1:
+> >                     if i == j:
+> >                         arr.remove(j)
+> >                 k = k + 1
+> >             dict_bst = Dict_bst()
+> >             for i in arr:
+> >                 dict_bst.insert(i.key, i.value)
+> >             self.assertEqual(dict_bst.size(), len(arr))
+> 4. Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for mutable and immutable versions.
  
