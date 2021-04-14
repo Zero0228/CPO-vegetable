@@ -18,16 +18,29 @@ def insert(bst,key,val):
     # if true, search the tree and insert; else, build a root for it
     if bst is None:
         bst = TreeNode(key,val)
-    elif key < bst.key:
-        if bst.leftChild is None:
-            bst.leftChild = TreeNode(key,val)
-        else:
-            insert(bst.leftChild,key,val)
     else:
-        if bst.rightChild is None:
-            bst.rightChild = TreeNode(key,val)
+        if type(key) is str:
+            key_num = 0
+            for i in range(len(key)):
+                key_num = key_num + ord(key[i])
         else:
-            insert(bst.rightChild,key,val)
+            key_num = key
+        if type(bst.key) is str:
+            bstkey_num = 0
+            for i in range(len(bst.key)):
+                bstkey_num = bstkey_num + ord(bst.key[i])
+        else:
+            bstkey_num = bst.key
+        if key_num <= bstkey_num:
+            if bst.leftChild is None:
+                bst.leftChild = TreeNode(key,val)
+            else:
+                insert(bst.leftChild,key,val)
+        else:
+            if bst.rightChild is None:
+                bst.rightChild = TreeNode(key,val)
+            else:
+                insert(bst.rightChild,key,val)
     return bst
 
 def get(bst,key):
@@ -104,6 +117,7 @@ def delete(bst,key):
 def tolist(bst,ans):
     # Conversion to built-in list in preorder 
     if bst is not None:
+        ans.append(bst.key)
         ans.append(bst.val)
         tolist(bst.leftChild,ans)
         tolist(bst.rightChild,ans)
@@ -112,12 +126,14 @@ def tolist(bst,ans):
 def fromlist(lst):
     # Conversion from built-in list in preorder
     bst = None
-    if len(lst) > 0:
-        for i in range(0,len(lst)):
-            bst = insert(bst,i,lst[i])
-        return bst
-    else:
+    if len(lst) == 0:
         return None
+    elif len(lst) % 2 == 1:
+        return False
+    else:
+        for i in range(0,len(lst),2):
+            bst = insert(bst,lst[i],lst[i+1])
+        return bst
 
 def map(bst,f):
     # Conversion to built-in list in preorder 
@@ -136,10 +152,11 @@ def func(bst,f,ans):
 
 def filter(bst,current,rule):
     if current is not None:
-        if rule(current.key):
-            delete(bst,current.key)
-        filter(bst,current.leftChild,rule)
-        filter(bst,current.rightChild,rule)
+        if rule(current.key) is False:
+            bst = insert(bst,current.key,current.val)
+        bst = filter(bst,current.leftChild,rule)
+        bst = filter(bst,current.rightChild,rule)
+    return bst
 
 def mconcat(bst,T):
     # add current tree to T 

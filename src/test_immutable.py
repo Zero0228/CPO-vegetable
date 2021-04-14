@@ -3,7 +3,7 @@
 import unittest
 from hypothesis import given
 import hypothesis.strategies as st
-from immutable import *
+from immutable_check import *
 
 class TestImmutableList(unittest.TestCase):
     def test_size(self):
@@ -11,6 +11,12 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(size(TreeNode(3,'a')), 1)
         self.assertEqual(size(TreeNode(3,'a',TreeNode(2,'b'))), 2)
         self.assertEqual(size(TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))), 3)
+        self.assertEqual(size(None), 0)
+        self.assertEqual(size(TreeNode(3,'a')), 1)
+        self.assertEqual(size(TreeNode(3,'a',TreeNode(2,None))), 2)
+        tmp = TreeNode(3,'a',TreeNode("sadf",'b'),TreeNode(5,'c'))
+        tmp = insert(tmp, "g", "g")
+        self.assertEqual(size(tmp), 4)
     
     def test_insert(self):
         self.assertEqual(insert(None,3,'a').key, 3)
@@ -44,16 +50,18 @@ class TestImmutableList(unittest.TestCase):
     def test_tolist(self):
         T = TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))
         ans = []
-        self.assertEqual(tolist(T,ans),['a','b','c'])
+        self.assertEqual(tolist(T,ans),[3, 'a', 2, 'b', 5, 'c'])
 
     def test_fromlist(self):
-        lst = ['a','b','c']
+        lst = [3, 'a', 2, 'b', 5, 'c']
         T = fromlist(lst)
         self.assertEqual(T.val, 'a')
-        self.assertEqual(T.rightChild.val,'b')
-        self.assertEqual(T.rightChild.rightChild.val,'c')
+        self.assertEqual(T.leftChild.val,'b')
+        self.assertEqual(T.rightChild.val,'c')
         lst2 = []
         self.assertEqual(fromlist(lst2),None)
+        lst3 = [3, 'a', 2, 'b', 5]
+        self.assertEqual(fromlist(lst3),False)
 
     def test_map(self):
         T = TreeNode(3,4,TreeNode(2,6),TreeNode(5,7))
@@ -79,12 +87,14 @@ class TestImmutableList(unittest.TestCase):
     def test_filter(self):
         T = TreeNode(3,4,TreeNode(2,6),TreeNode(5,7))
         def r(key):
-            if key % 2 == 0:
-                return True
-            else:
-                return False
-        filter(T,T,r)
-        self.assertEqual(T.leftChild,None)
+            return key % 2 == 0
+        T_filter = None
+        T_filter = filter(T_filter,T,r)
+        self.assertEqual(T_filter.key,3)
+        self.assertEqual(T_filter.val,4)
+        self.assertEqual(T_filter.leftChild,None)
+        self.assertEqual(T_filter.rightChild.key,5)
+        self.assertEqual(T_filter.rightChild.val,7)
 
     def test_mconcat(self):
         T1 = TreeNode(3,4,TreeNode(2,6),TreeNode(5,7))
@@ -94,16 +104,41 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(lc.leftChild.key,1)
         self.assertEqual(lc.leftChild.val,8)
 
-    @given(st.lists(st.integers()))
+    element = st.one_of(st.integers(),st.text(min_size=1))
+    @given(st.lists(element))
     def test_from_list_to_list_equality(self, a):
         ans = []
-        self.assertEqual(tolist(fromlist(a),ans), a)
+        if len(a) % 2 == 1:
+            self.assertEqual(fromlist(a), False)
+        else:
+            for i in range(0,len(a),2):
+                for j in range(i+2,len(a),2):
+                    if type(a[i]) is str:
+                        ai_num = 0
+                        for k in range(len(a[i])):
+                            ai_num = ai_num + ord(a[i][k])
+                    else:
+                        ai_num = a[i]
+                    if type(a[j]) is str:
+                        aj_num = 0
+                        for k in range(len(a[j])):
+                            aj_num = aj_num + ord(a[j][k])
+                    else:
+                        aj_num = a[j]
+                    if ai_num > aj_num:
+                        a[i], a[j] = a[j], a[i]
+                        a[i+1], a[j+1] = a[j+1], a[i+1]
+            self.assertEqual(tolist(fromlist(a),ans), a)
     
-    @given(st.lists(st.integers()))
+    element = st.one_of(st.integers(),st.text(min_size=1))
+    @given(st.lists(element))
     def test_monoid_identity(self, lst):
-        a = fromlist(lst)
-        self.assertEqual(mconcat(mempty(), a), a)
-        self.assertEqual(mconcat(a, mempty()), a)
+        if len(lst) % 2 == 1:
+            self.assertEqual(fromlist(lst), False)
+        else:
+            a = fromlist(lst)
+            self.assertEqual(mconcat(mempty(), a), a)
+            self.assertEqual(mconcat(a, mempty()), a)
 
     def test_iter(self):
         T = TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))
