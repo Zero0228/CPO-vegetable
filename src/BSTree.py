@@ -3,7 +3,6 @@
 
 import collections
 from collections.abc import Iterable
-import numpy as np
 import operator
 
 class Node:
@@ -14,18 +13,11 @@ class Node:
         self.parent = None
         self.key = key
         self.value = value
-        # modify
-        self.key1 = []
-        if type(self.key) == type("abc"):
+        self.key_sum = 0
+        if type(self.key) != type(1):
             for i in self.key:
-                s = ord(i)
-                self.key1.append(s)
-            self.key1 = np.array(self.key1)
-            # self.key1 = np.fromstring(self.key, dtype=np.uint8)
-        elif type(self.key) == type(1):
-            self.key1.append(self.key)
-            self.key1 = np.array(self.key1)
-        # print(self.key1)
+                self.key_sum = self.key_sum + ord(i)
+        else: self.key_sum = self.key
 
     def __next__(self):
         return self
@@ -34,48 +26,12 @@ class Node:
         return self
     # modify
     def __gt__(self, other):
-        l1 = len(self.key1)
-        l2 = len(other.key1)
-        if l1 > l2:
-            return True
-        elif l1 == l2:
-            flag = False
-            for i in range(l1):
-                if self.key1[i] == other.key1[i]:
-                    continue
-                elif self.key1[i] < other.key1[i]:
-                    break
-                elif self.key1[i] > other.key1[i]:
-                    flag = True
-                    break
-            return flag
-        else:  return False
+        return self.key_sum > other.key_sum
     def __eq__(self, other):
         if other == None: return None
-        l1 = len(self.key1)
-        l2 = len(other.key1)
-        if l1 != l2: return False
-        elif all(self.key1==other.key1) is True:
-            return True
-        else: return False
+        else: return self.key_sum == other.key_sum
     def __lt__(self, other):
-        l1 = len(self.key1)
-        l2 = len(other.key1)
-        if l1 < l2:
-            return True
-        elif l1 == l2:
-            flag = False
-            for i in range(l1):
-                if self.key1[i] == other.key1[i]:
-                    continue
-                elif self.key1[i] > other.key1[i]:
-                    break
-                elif self.key1[i] < other.key1[i]:
-                    flag = True
-                    break
-            return flag
-        else:
-            return False
+        return self.key_sum < other.key_sum
 
 class BSTree:
     """
@@ -191,10 +147,18 @@ class BSTree:
             start = args[0]
         if not start:
             return None
-        a = Node(key, 1)
-        if a == start:
+        # a = Node(key, 1)
+
+        key_sum = 0
+        if type(key) != type(1):
+            for i in key:
+                key_sum = key_sum + ord(i)
+        else:
+            key_sum = key
+
+        if key_sum == start.key_sum:
             return start
-        elif a > start:
+        elif key_sum > start.key_sum:
             return self.get_node(key,start.right)
         else:
             return self.get_node(key,start.left)
@@ -231,7 +195,7 @@ class BSTree:
             child = Node(key,value)
             parent = args[0]
             #print(args[0].key, args[0].value)
-            if child > parent:
+            if child.key_sum > parent.key_sum:
                 if not parent.right:
                     parent.right = child
                     child.parent = parent
@@ -324,29 +288,29 @@ class BSTree:
         switch1 = node1
         switch2 = node2
         temp_key = switch1.key
-        tmp_key1 = switch1.key1
+        tmp_key_sum = switch1.key_sum
         temp_value = switch1.value
 
         if switch1 == self.Root:
             self.Root.key = node2.key
-            self.Root.key1 = node2.key1
+            self.Root.key_sum = node2.key_sum
             self.Root.value = node2.value
             switch2.key = temp_key
-            switch2.key1 = temp_key1
+            switch2.key_sum = temp_key_sum
             switch2.value = temp_value
 
         elif switch2 == self.Root:
             switch1.key = self.Root.key
-            switch1.key1 = self.Root.key1
+            switch1.key_sum = self.Root.key_sum
             self.Root.key = temp_key
-            self.Root.key1 = temp_key1
+            self.Root.key_sum = temp_key_sum
             self.Root.value = temp_value
         else:
             switch1.key = node2.key
-            switch1.key1 = node2.key1
+            switch1.key_sum = node2.key_sum
             switch1.value = node2.value
             switch2.key = temp_key
-            switch2.key1 = temp_key1
+            switch2.key_sum = temp_key_sum
             switch2.value = temp_value
 
     def get_height(self,*args):

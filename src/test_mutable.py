@@ -6,12 +6,6 @@ from hypothesis import given
 import hypothesis.strategies as st
 from mutable import *
 
-'''
-from BSTree import *
-a = Node("a", 1)
-b = Node("abc", 1)
-print(type(a == b))
-'''
 class TestMutableList(unittest.TestCase):
 
     def test_append(self):
@@ -20,9 +14,9 @@ class TestMutableList(unittest.TestCase):
         self.assertEqual(dict_bst.Root.key, 1)
         self.assertEqual(dict_bst.Root.value, 2)
         # display(dict_bst.Root)
-        dict_bst.insert("a", 4)
+        dict_bst.insert('a', 4)
         rc = dict_bst.Root.right
-        self.assertEqual(rc.key, "a")
+        self.assertEqual(rc.key, 'a')
         self.assertEqual(rc.value, 4)
         # display(dict_bst.Root)
 
@@ -90,8 +84,6 @@ class TestMutableList(unittest.TestCase):
         node = dict_bst.get_node1(2)
         node2 = dict_bst.find_value(2)
         self.assertEqual(node2, node)
-        # print(node1.key, node1.value)
-        # print(node2.key, node2.value)
 
     def key_is_odd(self, node):
         return node.key % 2 == 1
@@ -193,7 +185,7 @@ class TestMutableList(unittest.TestCase):
         tmp_bst = dict_bst.to_list()
         if len(arr)>0:
             for i in range(len(arr)):
-                self.assertEqual(all(arr[i].key1==tmp_bst[i].key1), True)
+                self.assertEqual(arr[i].key_sum==tmp_bst[i].key_sum, True)
                 self.assertEqual(arr[i].value, tmp_bst[i].value)
 
     @given(st.lists(NodeStrategy))
