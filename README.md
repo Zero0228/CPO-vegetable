@@ -37,9 +37,78 @@
 ## Update
 
 > - ### Zhuo Lin: 
-> >         Check all functions in the immutable versions.
-> >         Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
-> >         Add filter for immutable.
+> Check all functions in the immutable versions.
+> Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions.
+> Add filter for immutable.
+> ####4.14 update
+> 2. Immutable version should work with string key too.
+> Added key of string type.
+> The following code can work.
+> >    def test_size(self):
+> >        self.assertEqual(size(None), 0)
+> >        self.assertEqual(size(TreeNode(3,'a')), 1)
+> >        self.assertEqual(size(TreeNode(3,'a',TreeNode(2,'b'))), 2)
+> >        self.assertEqual(size(TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))), 3)
+> >        self.assertEqual(size(None), 0)
+> >        self.assertEqual(size(TreeNode(3,'a')), 1)
+> >        self.assertEqual(size(TreeNode(3,'a',TreeNode(2,None))), 2)
+> >        tmp = TreeNode(3,'a',TreeNode("sadf",'b'),TreeNode(5,'c'))
+> >        tmp = insert(tmp, "g", "g")
+> >        self.assertEqual(size(tmp), 4)
+> 3.  Recheck the rule function.
+> 4. From immutable test:It is not an immutable version because you change stored data during each ‘filter` call. Recheck all your immutable API.
+> Recheck the filter function.
+> The following code can work.
+> >    def test_filter(self):
+> >        T = TreeNode(3,4,TreeNode(2,6),TreeNode(5,7))
+> >        def r(key):
+> >            return key % 2 == 0
+> >        T_filter = None
+> >        T_filter = filter(T_filter,T,r)
+> >        self.assertEqual(T_filter.key,3)
+> >        self.assertEqual(T_filter.val,4)
+> >        self.assertEqual(T_filter.leftChild,None)
+> >        self.assertEqual(T.leftChild.key,2)
+> >        self.assertEqual(T.leftChild.val,6)
+> >        self.assertEqual(T_filter.rightChild.key,5)
+> >        self.assertEqual(T_filter.rightChild.val,7)
+> 5. Add property-based tests for from_list and to_list, all monoid properties (Associativity, Identity element) for immutable versions. 
+> The following code can work. 
+> >    element = st.one_of(st.integers(),st.text(min_size=1))
+> >    @given(st.lists(element))
+> >    def test_from_list_to_list_equality(self, a):
+> >        ans = []
+> >        if len(a) % 2 == 1:
+> >            self.assertEqual(fromlist(a), False)
+> >        else:
+> >            for i in range(0,len(a),2):
+> >                for j in range(i+2,len(a),2):
+> >                    if type(a[i]) is str:
+> >                        ai_num = 0
+> >                        for k in range(len(a[i])):
+> >                            ai_num = ai_num + ord(a[i][k])
+> >                    else:
+> >                        ai_num = a[i]
+> >                    if type(a[j]) is str:
+> >                        aj_num = 0
+> >                        for k in range(len(a[j])):
+> >                            aj_num = aj_num + ord(a[j][k])
+> >                    else:
+> >                        aj_num = a[j]
+> >                    if ai_num > aj_num:
+> >                        a[i], a[j] = a[j], a[i]
+> >                        a[i+1], a[j+1] = a[j+1], a[i+1]
+> >            self.assertEqual(tolist(fromlist(a),ans), a)
+> >    
+> >    element = st.one_of(st.integers(),st.text(min_size=1))
+> >    @given(st.lists(element))
+> >    def test_monoid_identity(self, lst):
+> >        if len(lst) % 2 == 1:
+> >            self.assertEqual(fromlist(lst), False)
+> >        else:
+> >            a = fromlist(lst)
+> >            self.assertEqual(mconcat(mempty(), a), a)
+> >            self.assertEqual(mconcat(a, mempty()), a)    
          
 > - ### Liu Fen:
 > 
