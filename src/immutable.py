@@ -158,18 +158,14 @@ def filter(bst,current,rule):
         bst = filter(bst,current.rightChild,rule)
     return bst
 
-def mconcat(bst,T):
-    # add current tree to T 
-    if bst is None:
-        return T
-    else:
-        if T is None:
-            return mconcat(T,bst)
-        k = bst.key
-        v = bst.val
-        insert(T,k,v)
-        mconcat(bst.leftChild,T)
-        mconcat(bst.rightChild,T)
+def mconcat(bst1,bst2):
+    # combine the two trees to a new tree 
+    ans1 = []
+    ans2 = []
+    lst1 = tolist(bst1,ans1)
+    lst2 = tolist(bst2,ans2)
+    lst = lst1 + lst2
+    return fromlist(lst)
 
 def mempty():
     return None
