@@ -118,9 +118,46 @@
         if len(lst) % 2 == 1:
             self.assertEqual(fromlist(lst), False)
         else:
+            for i in range(0,len(lst),2):
+                for j in range(i+2,len(lst),2):
+                    if type(lst[i]) is str:
+                        lsti_num = 0
+                        for k in range(len(lst[i])):
+                            lsti_num = lsti_num + ord(lst[i][k])
+                    else:
+                        lsti_num = lst[i]
+                    if type(lst[j]) is str:
+                        lstj_num = 0
+                        for k in range(len(lst[j])):
+                            lstj_num = lstj_num + ord(lst[j][k])
+                    else:
+                        lstj_num = lst[j]
+                    if lsti_num > lstj_num:
+                        lst[i], lst[j] = lst[j], lst[i]
+                        lst[i+1], lst[j+1] = lst[j+1], lst[i+1]
             a = fromlist(lst)
-            self.assertEqual(mconcat(mempty(), a), a)
-            self.assertEqual(mconcat(a, mempty()), a) `   
+            ans = []
+            ans1 = []
+            ans2 = []
+            self.assertEqual(tolist(mconcat(mempty(), a),ans1), lst)
+            self.assertEqual(tolist(mconcat(a, mempty()),ans2), lst)
+    
+    element = st.one_of(st.integers(),st.text(min_size=1))
+    @given(st.lists(element),st.lists(element),st.lists(element))
+    def test_monoid_associativity(self, lst1,lst2,lst3):
+        if len(lst1) % 2 == 1:
+            self.assertEqual(fromlist(lst1), False)
+        elif len(lst2) % 2 == 1:
+            self.assertEqual(fromlist(lst2), False)
+        elif len(lst3) % 2 == 1:
+            self.assertEqual(fromlist(lst3), False)
+        else:
+            t1 = fromlist(lst1)
+            t2 = fromlist(lst2)
+            t3 = fromlist(lst3)
+            ans1 = []
+            ans2 = []
+            self.assertEqual(tolist(mconcat(mconcat(t1,t2),t3),ans1), tolist(mconcat(t1,mconcat(t2,t3)),ans2))
          
 > - ### Liu Fen:
 > 
