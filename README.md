@@ -124,6 +124,7 @@
          
 > - ### Liu Fen:
 > 
+> #### 4.9 update
 > 2. Fix warnings:
 > >     from collections.abc import Iterable
 > 
@@ -227,5 +228,8 @@
 > >             for i in arr:
 > >                 dict_bst.insert(i.key, i.value)
 > >             self.assertEqual(dict_bst.size(), len(arr))
-
+> 
+> #### 4.14 update
+> <div align=center><img src="./fig/4.png"/></div>
+> I have added def test_from_list_to_list(self, arr), def test_monoid_identity(self, arr), def test_monoid_associativity(self, arr, arr1, arr2) methods to test_mutable.py before
  
