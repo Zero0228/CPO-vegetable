@@ -3,7 +3,7 @@
 import unittest
 from hypothesis import given
 import hypothesis.strategies as st
-from immutable_check import *
+from immutable import *
 
 class TestImmutableList(unittest.TestCase):
     def test_size(self):
@@ -93,6 +93,8 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(T_filter.key,3)
         self.assertEqual(T_filter.val,4)
         self.assertEqual(T_filter.leftChild,None)
+        self.assertEqual(T.leftChild.key,2)
+        self.assertEqual(T.leftChild.val,6)
         self.assertEqual(T_filter.rightChild.key,5)
         self.assertEqual(T_filter.rightChild.val,7)
 
