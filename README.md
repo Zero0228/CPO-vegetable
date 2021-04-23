@@ -158,7 +158,14 @@
             ans1 = []
             ans2 = []
             self.assertEqual(tolist(mconcat(mconcat(t1,t2),t3),ans1), tolist(mconcat(t1,mconcat(t2,t3)),ans2))
-         
+        
+> #### 4.23 update
+> 1. Changed the parameter transfer settings for mconcat, filter, and toList.  
+> 2. Removed all unnecessary comments and source code. 
+> 3. Added tests for exceptions for insert and delete function.  
+>    Returns false when inserting a key-value pair with a null key or when deleting a non-existent element. 
+> 4. Check the iterator interface. 
+> 
 > - ### Liu Fen:
 > 
 > #### 4.9 update
