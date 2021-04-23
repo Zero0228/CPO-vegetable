@@ -238,10 +238,6 @@
 >
 > 6. Why it is a part of Dict_bst? It should function passed from library user source code. Also for `add` and `square`.
 > >   I moved the function to the 'test_mutable.py' file.
->
-> 8. Remove key type restriction.
-> In this part, I overloaded symbols, such as'>'/'=='/'<'(Node).
-> <div align=center><img src="./fig/1.png"/><img src="./fig/3.png"/><img src="./fig/2.png"/></div>
 > 
 > This is the changed code. Now, you can increase the key value of the string type.
 > >         def test_size(self):
