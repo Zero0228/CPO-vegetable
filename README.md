@@ -269,4 +269,9 @@
 > #### 4.14 update
 > <div align=center><img src="./fig/4.png"/></div>
 > I have added def test_from_list_to_list(self, arr), def test_monoid_identity(self, arr), def test_monoid_associativity(self, arr, arr1, arr2) methods to test_mutable.py before
+> 
+> #### 4.23 update
+> > 1. Organized the test format of test_mutable.py
+> > 2. Rewrite the "def __iter__(self)" method to return an iterative list
+> > 3. Added two exception handling: "add key value to None" and "delete non-existent elements"
  
