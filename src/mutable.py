@@ -10,7 +10,6 @@ BSTree = BSTree.BSTree
 
 class Dict_bst(BSTree):
     def __init__(self, *args):
-        """Initialzes tree the same as as BST"""
         BSTree.__init__(self, *args)
 
     # 1. add a new element
@@ -27,7 +26,7 @@ class Dict_bst(BSTree):
 
     # 4. conversion from and to python lists
     def from_list(self, list):
-        if list == []: return Dict_bst()
+        if list == []: return self
         else:
             for i in list:
                 self.insert(i.key, i.value)
@@ -67,38 +66,18 @@ class Dict_bst(BSTree):
         return sum
 
     # 9. iterator
-    def __iter__(self, root: Node):
-        # Stack for the recursion simulation
-        self.stack = []
-        # Remember that the algorithm starts with a call to the helper function
-        # with the root node as the input
-        self._leftmost_inorder(root)
-        # print(self.stack)
-        return self.stack
-
-    def _leftmost_inorder(self, root):
-        # For a given node, add all the elements in the leftmost branch of the tree
-        # under it to the stack.
-        while root:
-            self.stack.append(root)
-            root = root.left
-
+    def __iter__(self):
+        return iter(self.to_list())
     def next(self):
-        if not hasattr(self, "stack"):
+        if self.Root == None:
             raise StopIteration
-        topmost_node = self.stack.pop()
-        if topmost_node.right:
-            self._leftmost_inorder(topmost_node.right)
-        return topmost_node
-
-    def hasNext(self) -> bool:
-        return len(self.stack) > 0
+        else:
+            return iter(self.to_list())
 
     # 10. mempty and mconcat
     def mempty(self):
         self.Root = None
         return self
-
 
     def mconcat(self, a):
         if self.Root == None:

@@ -3,7 +3,6 @@
 
 import collections
 from collections.abc import Iterable
-import operator
 
 class Node:
     """Represents a node of a binary tree"""
@@ -24,12 +23,14 @@ class Node:
 
     def __iter__(self):
         return self
-    # modify
+
     def __gt__(self, other):
         return self.key_sum > other.key_sum
+
     def __eq__(self, other):
         if other == None: return None
         else: return self.key_sum == other.key_sum
+
     def __lt__(self, other):
         return self.key_sum < other.key_sum
 
@@ -43,12 +44,10 @@ class BSTree:
     BSTree(seq) -> Creates a new Binary Search Tree from the elements in sequence [(k1,v1),(k2,v2),...,(kn,vn)]
     """
     def __init__(self,*args):
-
         self.Root = None
-
-        if len(args) == 1:
-            if isinstance(args[0],Iterable): # collections.
-                for x in args[0]:
+        if len(args) >= 1:
+            if isinstance(args,Iterable):
+                for x in args:
                     self.insert(x[0],x[1])
             else:
                 raise TypeError(str(args[0]) + " is not iterable")
@@ -64,14 +63,11 @@ class BSTree:
         else:
             node = args[0]
             elements = args[1]
-
         elements.append(node)
-
         if node.left:
             self.preorder(node.left,elements)
         if node.right:
             self.preorder(node.right,elements)
-
         return elements
 
     def inorder(self,*args):
@@ -85,15 +81,11 @@ class BSTree:
         else:
             node = args[0]
             elements = args[1]
-
         if node.left:
             self.inorder(node.left,elements)
-
         elements.append(node)
-
         if node.right:
             self.inorder(node.right,elements)
-
         return elements
 
     def postorder(self,*args):
@@ -107,15 +99,11 @@ class BSTree:
         else:
             node = args[0]
             elements = args[1]
-
         if node.left:
             self.postorder(node.left,elements)
-
         if node.right:
             self.postorder(node.right,elements)
-
         elements.append(node)
-
         return elements
 
     def levelorder(self):
@@ -126,7 +114,7 @@ class BSTree:
         q = collections.deque()
         q.appendleft(self.Root)
         lst = []
-        while len(q):  #  != 0
+        while len(q):
             removed = q.pop()
             lst.append(removed)
             visit = self.get_node(removed.key,self.Root)
@@ -147,15 +135,12 @@ class BSTree:
             start = args[0]
         if not start:
             return None
-        # a = Node(key, 1)
-
         key_sum = 0
         if type(key) != type(1):
             for i in key:
                 key_sum = key_sum + ord(i)
         else:
             key_sum = key
-
         if key_sum == start.key_sum:
             return start
         elif key_sum > start.key_sum:
@@ -185,16 +170,16 @@ class BSTree:
         a new Node with key attribute key and value attribute
         value into T.
         """
-        if not self.Root:
+        if key == None:
+            raise TypeError("The key value cannot be None")
+        elif not self.Root:
             self.Root = Node(key,value)
-            #print(type(self.Root))
         elif len(args) == 0:
             if not self.get_node(key,self.Root):
                 self.insert(key,value,self.Root)
         else:
             child = Node(key,value)
             parent = args[0]
-            #print(args[0].key, args[0].value)
             if child.key_sum > parent.key_sum:
                 if not parent.right:
                     parent.right = child
@@ -217,16 +202,13 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-
         left = 0
         right = 0
-
         if node:
             if node.left:
                 left = self.get_element_count(node.left)
             if node.right:
                 right = self.get_element_count(node.right)
-
             return 1 + left + right
         else:
             return 0
@@ -241,7 +223,6 @@ class BSTree:
                 par_node.left = None
             else:
                 par_node.right = None
-
             del node
 
     def _delete_leaf_parent(self,node):
@@ -250,7 +231,6 @@ class BSTree:
         as a node with only one child.
         """
         par_node = node.parent
-
         if node == self.Root:
             if node.right:
                 self.Root = node.right
@@ -258,7 +238,6 @@ class BSTree:
             else:
                 self.Root = node.left
                 node.left = None
-
         else:
             if par_node.right == node:
                 if node.right:
@@ -288,9 +267,8 @@ class BSTree:
         switch1 = node1
         switch2 = node2
         temp_key = switch1.key
-        tmp_key_sum = switch1.key_sum
+        temp_key_sum = switch1.key_sum
         temp_value = switch1.value
-
         if switch1 == self.Root:
             self.Root.key = node2.key
             self.Root.key_sum = node2.key_sum
@@ -298,7 +276,6 @@ class BSTree:
             switch2.key = temp_key
             switch2.key_sum = temp_key_sum
             switch2.value = temp_value
-
         elif switch2 == self.Root:
             switch1.key = self.Root.key
             switch1.key_sum = self.Root.key_sum
@@ -322,7 +299,6 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-
         if not node or (not node.left and not node.right):
             return 0
         else:
@@ -337,7 +313,6 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-
         if not node.right:
             return node
         else:
@@ -352,7 +327,6 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-
         if not node.left:
             return node
         else:
@@ -366,7 +340,6 @@ class BSTree:
         if self.get_height(node.left) > self.get_height(node.right):
             to_switch = self.get_max(node.left)
             self._switch_nodes(node,to_switch)
-
             if not (to_switch.right or to_switch.left):
                 to_delete = self.get_max(node.left)
                 self._delete_leaf(to_delete)
@@ -376,7 +349,6 @@ class BSTree:
         else:
             to_switch = self.get_min(node.right)
             self._switch_nodes(node,to_switch)
-
             if not (to_switch.right or to_switch.left):
                 to_delete = self.get_min(node.right)
                 self._delete_leaf(to_delete)
@@ -389,14 +361,13 @@ class BSTree:
         with key attribute key from T.
         """
         node = self.get_node(key,self.Root)
-
-        if node:
+        if node == None:
+            raise TypeError("The element does not exist")
+        elif node:
             if not (node.left or node.right):
                 self._delete_leaf(node)
-
             elif not (node.left and node.right):
                 self._delete_leaf_parent(node)
-
             else:
                 self._delete_node(node)
 
