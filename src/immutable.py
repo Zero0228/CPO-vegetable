@@ -14,8 +14,8 @@ def size(bst):
         return 1 + size(bst.leftChild) + size(bst.rightChild)
 
 def insert(bst,key,val):
-    # check whether the tree has the root
-    # if true, search the tree and insert; else, build a root for it
+    if key == None or val == None:
+        return False
     if bst is None:
         bst = TreeNode(key,val)
     else:
@@ -44,8 +44,6 @@ def insert(bst,key,val):
     return bst
 
 def get(bst,key):
-    # check whether the tree has the root
-    # if true, search the tree; else, return none
     if bst is None:
         return None
     elif key ==  bst.key:
@@ -56,8 +54,6 @@ def get(bst,key):
         return get(bst.rightChild,key)
 
 def find(bst,key):
-    # check whether the tree has the root
-    # if true, search the tree; else, return none
     if get(bst,key) == None:
         return False
     else:
@@ -74,19 +70,17 @@ def parent(bst,key):
         return parent(bst.rightChild,key)
 
 def indict(bst,k,v):
-    # search whether there is a key in the map
     if find(bst,k) == v:
         return True
     else:
         return False
 
 def delete(bst,key):
-    # delete the element by key value
     n = get(bst,key)
-    p = parent(bst,key)
     if n == None:
         return False
-    elif n.leftChild is None:
+    p = parent(bst,key)
+    if n.leftChild is None:
         if n == p.leftChild:
             p.leftChild = n.rightChild
         else:
@@ -114,17 +108,18 @@ def delete(bst,key):
             pre.leftChild = temp.rightChild
             del temp
 
-def tolist(bst,ans):
-    # Conversion to built-in list in preorder 
-    if bst is not None:
-        ans.append(bst.key)
-        ans.append(bst.val)
-        tolist(bst.leftChild,ans)
-        tolist(bst.rightChild,ans)
-    return ans
+def tolist(bst):
+    res = []
+    def tolist_loop(bst,ans):
+        if bst is not None:
+            ans.append(bst.key)
+            ans.append(bst.val)
+            ans = tolist_loop(bst.leftChild,ans)
+            ans = tolist_loop(bst.rightChild,ans)
+        return ans
+    return tolist_loop(bst, res)
 
 def fromlist(lst):
-    # Conversion from built-in list in preorder
     bst = None
     if len(lst) == 0:
         return None
@@ -136,62 +131,48 @@ def fromlist(lst):
         return bst
 
 def map(bst,f):
-    # Conversion to built-in list in preorder 
     if bst is not None:
         bst.val = f(bst.val) 
         map(bst.leftChild,f)
         map(bst.rightChild,f)
 
-def func(bst,f,ans):
-    # process structure elements to build a return value by specific functions
-    if bst is not None:
-        ans[0] = f(ans[0], bst.val)
-        func(bst.leftChild,f,ans)
-        func(bst.rightChild,f,ans)
-    return ans
+def func(bst,f):
+    ans = [0]
+    def func_loop(bst,f,ans):
+        if bst is not None:
+            ans[0] = f(ans[0], bst.val)
+            func_loop(bst.leftChild,f,ans)
+            func_loop(bst.rightChild,f,ans)
+        return ans
+    return func_loop(bst,f,ans)[0]
 
-def filter(bst,current,rule):
-    if current is not None:
-        if rule(current.key) is False:
-            bst = insert(bst,current.key,current.val)
-        bst = filter(bst,current.leftChild,rule)
-        bst = filter(bst,current.rightChild,rule)
-    return bst
+def filter(tree,rule):
+    bst = None
+    def filter_loop(bst,current,rule):
+        if current is not None:
+            if rule(current.key) is False:
+                bst = insert(bst,current.key,current.val)
+            bst = filter_loop(bst,current.leftChild,rule)
+            bst = filter_loop(bst,current.rightChild,rule)
+        return bst
+    return filter_loop(bst, tree, rule)
 
 def mconcat(bst1,bst2):
-    # combine the two trees to a new tree 
-    ans1 = []
-    ans2 = []
-    lst1 = tolist(bst1,ans1)
-    lst2 = tolist(bst2,ans2)
+    lst1 = tolist(bst1)
+    lst2 = tolist(bst2)
     lst = lst1 + lst2
     return fromlist(lst)
 
 def mempty():
     return None
 
-def iteration(bst):
-    # Stack for the recursion simulation
-    stack = []
-    # Remember that the algorithm starts with a call to the helper function
-    # with the root node as the input
-    _leftmost_inorder(bst,stack)
-    return stack
-
-def _leftmost_inorder(bst,stack):
-    # For a given node, add all the elements in the leftmost branch of the tree
-    # under it to the stack.
-    while bst:
-        stack.append(bst)
-        bst = bst.leftChild
-
-def next(bst,stack):
-    if not hasattr(bst, "stack"):
-        raise StopIteration
-    topmost_node = stack.pop()
-    if topmost_node.rightChild:
-        _leftmost_inorder(bst,topmost_node.rightChild,stack)
-    return topmost_node
-
-def hasNext(bst,stack) -> bool:
-        return len(stack) > 0
+def iterator(bst):
+    lst = tolist(bst)
+    cur = 0
+    def foo():
+        nonlocal cur
+        if cur >= len(lst) or lst == []: raise StopIteration
+        tmp = lst[cur]
+        cur = cur + 1
+        return tmp
+    return foo
