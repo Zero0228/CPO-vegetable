@@ -3,10 +3,15 @@
 
 import collections
 from collections.abc import Iterable
+from typing import TypeVar, Generic, List, Iterator, Callable, Generator
+T = TypeVar('T')
+T0 = TypeVar('T0')
+T1 = TypeVar(str, int, float)
+T2 = TypeVar(None, str, int, float)
 
 class Node:
     """Represents a node of a binary tree"""
-    def __init__(self,key,value):
+    def __init__(self,key: T1,value: T2) -> None:
         self.left = None
         self.right = None
         self.parent = None
@@ -18,20 +23,20 @@ class Node:
                 self.key_sum = self.key_sum + ord(i)
         else: self.key_sum = self.key
 
-    def __next__(self):
+    def __next__(self) -> Callable:
         return self
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         return self
 
-    def __gt__(self, other):
+    def __gt__(self, other: T0) -> bool:
         return self.key_sum > other.key_sum
 
-    def __eq__(self, other):
+    def __eq__(self, other: T0):
         if other == None: return None
         else: return self.key_sum == other.key_sum
 
-    def __lt__(self, other):
+    def __lt__(self, other: T0) -> bool:
         return self.key_sum < other.key_sum
 
 class BSTree:
@@ -43,7 +48,7 @@ class BSTree:
     BSTree() -> Creates a new empty Binary Search Tree
     BSTree(seq) -> Creates a new Binary Search Tree from the elements in sequence [(k1,v1),(k2,v2),...,(kn,vn)]
     """
-    def __init__(self,*args):
+    def __init__(self,*args: T) -> None:
         self.Root = None
         if len(args) >= 1:
             if isinstance(args,Iterable):
@@ -52,7 +57,7 @@ class BSTree:
             else:
                 raise TypeError(str(args[0]) + " is not iterable")
 
-    def preorder(self,*args):
+    def preorder(self,*args: T) -> List:
         """
         T.preorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in preorder.
@@ -70,7 +75,7 @@ class BSTree:
             self.preorder(node.right,elements)
         return elements
 
-    def inorder(self,*args):
+    def inorder(self,*args: T) -> List:
         """
         T.inorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in inorder.
@@ -88,7 +93,7 @@ class BSTree:
             self.inorder(node.right,elements)
         return elements
 
-    def postorder(self,*args):
+    def postorder(self,*args: T) -> List:
         """
         T.postorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in postorder.
@@ -106,7 +111,7 @@ class BSTree:
         elements.append(node)
         return elements
 
-    def levelorder(self):
+    def levelorder(self) -> List:
         """
         T.levelorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in levelorder.
@@ -124,7 +129,7 @@ class BSTree:
                 q.appendleft(visit.right)
         return lst
 
-    def get_node(self,key,*args):
+    def get_node(self,key: T1,*args: T) -> T0:
         """
         T.get_node(key,...) -> Node. Produces the Node in T with key
         attribute key. If there is no such node, produces None.
@@ -148,7 +153,7 @@ class BSTree:
         else:
             return self.get_node(key,start.left)
 
-    def get_node1(self,value,*args):
+    def get_node1(self,value: T2,*args: T) -> T0:
         """
         T.get_node(value,...) -> Node. Produces the Node in T with value
         attribute value. If there is no such node, produces None.
@@ -164,7 +169,7 @@ class BSTree:
         return self.get_node1(value,start.left)
         return self.get_node1(value,start.right)
 
-    def insert(self,key,value,*args):
+    def insert(self,key: T1,value: T2,*args: T) -> None:
         """
         T.insert(key,value...) <==> T[key] = value. Inserts
         a new Node with key attribute key and value attribute
@@ -193,7 +198,7 @@ class BSTree:
                 else:
                     self.insert(key,value,parent.left)
 
-    def get_element_count(self,*args):
+    def get_element_count(self,*args: T) -> int:
         """
         T.get_element_count(...) -> Nat. Produces the number of elements
         in T.
@@ -213,7 +218,7 @@ class BSTree:
         else:
             return 0
 
-    def _delete_leaf(self,node):
+    def _delete_leaf(self,node: T0) -> None:
         """
         T._delete_leaf(node). Deletes node from T, treating it as a leaf.
         """
@@ -225,7 +230,7 @@ class BSTree:
                 par_node.right = None
             del node
 
-    def _delete_leaf_parent(self,node):
+    def _delete_leaf_parent(self,node: T0) -> None:
         """
         T._delete_leaf_parent(node). Deletes node from T, treating it
         as a node with only one child.
@@ -259,7 +264,7 @@ class BSTree:
                     node.left = None
         del node
 
-    def _switch_nodes(self,node1,node2):
+    def _switch_nodes(self,node1: T0,node2: T0) -> None:
         """
         T._switch_nodes(node1,node2). Switches positions
         of node1 and node2 in T.
@@ -290,7 +295,7 @@ class BSTree:
             switch2.key_sum = temp_key_sum
             switch2.value = temp_value
 
-    def get_height(self,*args):
+    def get_height(self,*args: T) -> int:
         """
         T.get_height(...) -> Nat. Produces the height of T, defined
         as one added to the height of the tallest subtree.
@@ -304,7 +309,7 @@ class BSTree:
         else:
             return 1 + max(self.get_height(node.left), self.get_height(node.right))
 
-    def get_max(self,*args):
+    def get_max(self,*args: T) -> T0:
         """
         T.get_max(...) -> Node. Produces the Node that has the maximum
         key attribute in T.
@@ -318,7 +323,7 @@ class BSTree:
         else:
             return self.get_max(node.right)
 
-    def get_min(self,*args):
+    def get_min(self,*args: T) -> T0:
         """
         T.get_min(...) -> Node. Produces the Node that has the minimum
         key attribute in T.
@@ -332,7 +337,7 @@ class BSTree:
         else:
             return self.get_min(node.left)
 
-    def _delete_node(self,node):
+    def _delete_node(self,node: T0) -> None:
         """
         T._delete_node(node). Deletes node from T, treating it as
         a node with two children.
@@ -356,13 +361,13 @@ class BSTree:
                 to_delete = self.get_min(node.right)
                 self._delete_leaf_parent(to_delete)
 
-    def delete(self,key):
+    def delete(self,key: T1) -> None:
         """T.delete(key) <==> del T[key]. Deletes the node
         with key attribute key from T.
         """
         node = self.get_node(key,self.Root)
         if node == None:
-            raise TypeError("The element does not exist")
+            raise AttributeError("The element does not exist")
         elif node:
             if not (node.left or node.right):
                 self._delete_leaf(node)

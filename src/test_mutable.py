@@ -27,7 +27,7 @@ class TestMutableList(unittest.TestCase):
         self.assertEqual(dict_bst.Root.right.key, "abc")
         self.assertEqual(dict_bst.Root.right.value, 6)
         try:  dict_bst.delete(1)
-        except TypeError as e:
+        except AttributeError as e:
             self.assertEqual(e.args[0], "The element does not exist")
 
     def test_size(self):
@@ -95,6 +95,15 @@ class TestMutableList(unittest.TestCase):
         for e in dict_bst:
             tmp.append(e)
         self.assertEqual(list, tmp)
+        # test that the two iterators on one data structure should work in parallel correctly
+        i1 = dict_bst.__iter__()
+        i2 = dict_bst.__iter__()
+        self.assertEqual(next(i1), dict_bst.find_key(3))
+        self.assertEqual(next(i1), dict_bst.find_key(1))
+        self.assertEqual(next(i2), dict_bst.find_key(3))
+        self.assertEqual(next(i2), dict_bst.find_key(1))
+        self.assertEqual(next(i1), dict_bst.find_key("1"))
+
         self.assertEqual(dict_bst.to_list(), tmp)
         dict_bst.__iter__()
         ls = Dict_bst()
