@@ -277,4 +277,10 @@
 > > 1. Organized the test format of test_mutable.py
 > > 2. Rewrite the "def __iter__(self)" method to return an iterative list
 > > 3. Added two exception handling: "add key value to None" and "delete non-existent elements"
+> 
+> #### 4.26 update
+> > 1. <div align=center><img src="./fig/5.png"/></div>
+> > 2. Change the exception type "TypeError" to "AttributeError".
+> > 3. Add type hints, for example:
+> > <div align=center><img src="./fig/6.png"/></div>
  
