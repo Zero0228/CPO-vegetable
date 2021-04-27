@@ -1,4 +1,5 @@
 # editor: Zhuo lin
+from typing import TypeVar, Generic, List, Iterator, Callable, Generator
 
 class TreeNode:
 	def __init__(self,key,val,left=None,right=None):	
@@ -7,13 +8,17 @@ class TreeNode:
 		self.leftChild = left
 		self.rightChild = right
 
-def size(bst):
+key_type = TypeVar(str, int, float)
+val_type = TypeVar(None, str, int, float)
+node_type = TypeVar(TreeNode)
+
+def size(bst: node_type) -> int:
     if bst is None:
         return 0
     else:
         return 1 + size(bst.leftChild) + size(bst.rightChild)
 
-def insert(bst,key,val):
+def insert(bst: node_type, key: key_type, val: val_type) -> node_type:
     if key == None or val == None:
         return False
     if bst is None:
@@ -43,7 +48,7 @@ def insert(bst,key,val):
                 insert(bst.rightChild,key,val)
     return bst
 
-def get(bst,key):
+def get(bst: node_type, key: key_type) -> node_type:
     if bst is None:
         return None
     elif key ==  bst.key:
@@ -53,13 +58,13 @@ def get(bst,key):
     else:
         return get(bst.rightChild,key)
 
-def find(bst,key):
+def find(bst: node_type, key: key_type) -> val_type:
     if get(bst,key) == None:
         return False
     else:
         return get(bst,key).val
 
-def parent(bst,key):
+def parent(bst: node_type, key: key_type) -> node_type:
     if bst is None or bst.key == key:
         return None
     elif key ==  bst.leftChild.key or key ==  bst.rightChild.key:
@@ -69,16 +74,16 @@ def parent(bst,key):
     else:
         return parent(bst.rightChild,key)
 
-def indict(bst,k,v):
+def indict(bst: node_type, k: key_type, v: val_type) -> bool:
     if find(bst,k) == v:
         return True
     else:
         return False
 
-def delete(bst,key):
+def delete(bst: node_type, key: key_type) -> None:
     n = get(bst,key)
     if n == None:
-        return False
+        raise AttributeError("The element does not exist")
     p = parent(bst,key)
     if n.leftChild is None:
         if n == p.leftChild:
@@ -108,7 +113,7 @@ def delete(bst,key):
             pre.leftChild = temp.rightChild
             del temp
 
-def tolist(bst):
+def tolist(bst: node_type) -> list:
     res = []
     def tolist_loop(bst,ans):
         if bst is not None:
@@ -119,7 +124,7 @@ def tolist(bst):
         return ans
     return tolist_loop(bst, res)
 
-def fromlist(lst):
+def fromlist(lst: list) -> node_type:
     bst = None
     if len(lst) == 0:
         return None
@@ -130,13 +135,13 @@ def fromlist(lst):
             bst = insert(bst,lst[i],lst[i+1])
         return bst
 
-def map(bst,f):
+def map(bst: node_type, f: Generator[str, int, float]) -> None:
     if bst is not None:
         bst.val = f(bst.val) 
         map(bst.leftChild,f)
         map(bst.rightChild,f)
 
-def func(bst,f):
+def func(bst: node_type, f: Generator[str, int, float]) -> int:
     ans = [0]
     def func_loop(bst,f,ans):
         if bst is not None:
@@ -146,7 +151,7 @@ def func(bst,f):
         return ans
     return func_loop(bst,f,ans)[0]
 
-def filter(tree,rule):
+def filter(tree: node_type, rule: Generator[str, int, float]) -> node_type:
     bst = None
     def filter_loop(bst,current,rule):
         if current is not None:
@@ -157,22 +162,26 @@ def filter(tree,rule):
         return bst
     return filter_loop(bst, tree, rule)
 
-def mconcat(bst1,bst2):
+def mconcat(bst1: node_type, bst2: node_type) -> node_type:
     lst1 = tolist(bst1)
     lst2 = tolist(bst2)
     lst = lst1 + lst2
     return fromlist(lst)
 
-def mempty():
+def mempty() -> None:
     return None
 
-def iterator(bst):
-    lst = tolist(bst)
-    cur = 0
+def iterator(bst: node_type) -> list:
+    return [tolist(bst), 0]
+
+def next_item(it_lst: list) -> node_type:
+    lst = it_lst[0]
+    cur = it_lst[1]
     def foo():
         nonlocal cur
         if cur >= len(lst) or lst == []: raise StopIteration
         tmp = lst[cur]
         cur = cur + 1
+        it_lst[1] = it_lst[1] + 1
         return tmp
     return foo

@@ -45,7 +45,9 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(indict(T,2,'b'),True)
         delete(T,2)
         self.assertEqual(indict(T,2,'b'),False)
-        self.assertEqual(delete(T,4),False)
+        try: delete(T,4)
+        except AttributeError as e:
+            self.assertEqual(e.args[0], "The element does not exist")
 
     def test_tolist(self):
         T = TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))
@@ -173,7 +175,8 @@ class TestImmutableList(unittest.TestCase):
         T = fromlist(lst)
         tmp = []
         try:
-            get_next = iterator(T)
+            it = iterator(T)
+            get_next = next_item(it)
             while True:
                 tmp.append(get_next())
                 tmp.append(get_next())
@@ -181,8 +184,18 @@ class TestImmutableList(unittest.TestCase):
             pass
         self.assertEqual(lst, tmp)
         self.assertEqual(tolist(T), tmp)
-        get_next = iterator(None)
+        it = iterator(None)
+        get_next = next_item(it)
         self.assertRaises(StopIteration, lambda:get_next())
+        i1 = iterator(T)
+        i2 = iterator(T)
+        self.assertEqual(next_item(i1)(), 3)
+        self.assertEqual(next_item(i1)(), 'a')
+        self.assertEqual(next_item(i2)(), 3)
+        self.assertEqual(next_item(i2)(), 'a')
+        self.assertEqual(next_item(i1)(), 2)
+        
+
 
 if __name__ == '__main__':
     unittest.main()
