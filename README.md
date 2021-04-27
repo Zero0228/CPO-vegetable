@@ -160,12 +160,16 @@
             self.assertEqual(tolist(mconcat(mconcat(t1,t2),t3),ans1), tolist(mconcat(t1,mconcat(t2,t3)),ans2))
         
 > #### 4.23 update
+> 1. Check the iterator to make the two iterators on one data structure should work in parallel correctly.  
+> 2. Added tests for exceptions when remove not existence element. 
+> 3. Added type hints.  
+> 
+> #### 4.27 update
 > 1. Changed the parameter transfer settings for mconcat, filter, and toList.  
 > 2. Removed all unnecessary comments and source code. 
 > 3. Added tests for exceptions for insert and delete function.  
 >    Returns false when inserting a key-value pair with a null key or when deleting a non-existent element. 
 > 4. Check the iterator interface. 
-> 
 > - ### Liu Fen:
 > 
 > #### 4.9 update
