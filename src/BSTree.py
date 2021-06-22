@@ -3,43 +3,45 @@
 
 import collections
 from collections.abc import Iterable
-from typing import TypeVar, Generic, List, Iterator, Callable, Generator
-T = TypeVar('T')
-T0 = TypeVar('T0')
-T1 = TypeVar(str, int, float)
-T2 = TypeVar(None, str, int, float)
+from typing import TypeVar, List, Iterator, Callable, Generic, Tuple, NewType, Union, Any, Deque, Optional, Type, Any
 
-class Node:
+T = TypeVar('T')
+T1 = TypeVar('T1', bound=Union[str, int, float]) #or
+T2 = TypeVar('T2', bound=Union[None, str, int, float])
+T12 = Union[T1,T2]
+
+class Node(Generic[T1, T2]):
     """Represents a node of a binary tree"""
-    def __init__(self,key: T1,value: T2) -> None:
+    def __init__(self,key: T1, value: T2) -> None:
         self.left = None
         self.right = None
         self.parent = None
-        self.key = key
-        self.value = value
+        self.key = key #type: T1
+        self.value = value #type: T2
         self.key_sum = 0
         if type(self.key) != type(1):
             for i in self.key:
                 self.key_sum = self.key_sum + ord(i)
-        else: self.key_sum = self.key
+        else: self.key_sum = int(self.key)
 
-    def __next__(self) -> Callable:
+    def __next__(self) -> 'Node':
         return self
 
     def __iter__(self) -> Iterator:
         return self
 
-    def __gt__(self, other: T0) -> bool:
+    def __gt__(self, other: 'Node') -> bool:
         return self.key_sum > other.key_sum
 
-    def __eq__(self, other: T0):
+    def __eq__(self, other):
         if other == None: return None
         else: return self.key_sum == other.key_sum
 
-    def __lt__(self, other: T0) -> bool:
+    def __lt__(self, other: 'Node') -> bool:
         return self.key_sum < other.key_sum
 
-class BSTree:
+
+class BSTree(Generic[T1, T2]):
     """
     BSTree implements an unbalanced Binary Search Tree.
     A Binary Search Tree is an ordered node based tree key structure
@@ -48,8 +50,8 @@ class BSTree:
     BSTree() -> Creates a new empty Binary Search Tree
     BSTree(seq) -> Creates a new Binary Search Tree from the elements in sequence [(k1,v1),(k2,v2),...,(kn,vn)]
     """
-    def __init__(self,*args: T) -> None:
-        self.Root = None
+    def __init__(self,*args: List[T12]) -> None:
+        self.Root = None  #type: Union[Node, None]
         if len(args) >= 1:
             if isinstance(args,Iterable):
                 for x in args:
@@ -57,57 +59,57 @@ class BSTree:
             else:
                 raise TypeError(str(args[0]) + " is not iterable")
 
-    def preorder(self,*args: T) -> List:
+    def preorder(self,*args: List) -> List:
         """
         T.preorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in preorder.
         """
         if len(args) == 0:
-            elements = []
+            elements = []  #type: List
             node = self.Root
         else:
-            node = args[0]
+            node = args[0]  #type:ignore
             elements = args[1]
         elements.append(node)
-        if node.left:
-            self.preorder(node.left,elements)
-        if node.right:
-            self.preorder(node.right,elements)
+        if node.left:  #type:ignore
+            self.preorder(node.left,elements)  #type:ignore
+        if node.right:  #type:ignore
+            self.preorder(node.right,elements)  #type:ignore
         return elements
 
-    def inorder(self,*args: T) -> List:
+    def inorder(self,*args: List) -> List:
         """
         T.inorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in inorder.
         """
         if len(args) == 0:
-            elements = []
+            elements = []  #type: List
             node = self.Root
         else:
-            node = args[0]
+            node = args[0]  #type: ignore
             elements = args[1]
-        if node.left:
-            self.inorder(node.left,elements)
+        if node.left:  #type: ignore
+            self.inorder(node.left,elements)  #type: ignore
         elements.append(node)
-        if node.right:
-            self.inorder(node.right,elements)
+        if node.right:  #type: ignore
+            self.inorder(node.right,elements)  #type: ignore
         return elements
 
-    def postorder(self,*args: T) -> List:
+    def postorder(self,*args: List) -> List:
         """
         T.postorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in postorder.
         """
         if len(args) == 0:
-            elements = []
+            elements = []  #type: List
             node = self.Root
         else:
-            node = args[0]
+            node = args[0]  #type: ignore
             elements = args[1]
-        if node.left:
-            self.postorder(node.left,elements)
-        if node.right:
-            self.postorder(node.right,elements)
+        if node.left:  #type: ignore
+            self.postorder(node.left,elements)  #type: ignore
+        if node.right:  #type: ignore
+            self.postorder(node.right,elements)  #type: ignore
         elements.append(node)
         return elements
 
@@ -116,20 +118,20 @@ class BSTree:
         T.levelorder(...) -> Sequence. Produces a sequence of the Nodes
         in T, obtained in levelorder.
         """
-        q = collections.deque()
+        q = collections.deque() #type: Deque[Any]
         q.appendleft(self.Root)
-        lst = []
+        lst = []  #type: List
         while len(q):
             removed = q.pop()
             lst.append(removed)
             visit = self.get_node(removed.key,self.Root)
-            if visit.left:
-                q.appendleft(visit.left)
-            if visit.right:
-                q.appendleft(visit.right)
+            if visit.left:  #type: ignore
+                q.appendleft(visit.left)  #type: ignore
+            if visit.right:  #type: ignore
+                q.appendleft(visit.right)  #type: ignore
         return lst
 
-    def get_node(self,key: T1,*args: T) -> T0:
+    def get_node(self,key: T1,*args: Optional[Node]) -> Union[Node, None]:
         """
         T.get_node(key,...) -> Node. Produces the Node in T with key
         attribute key. If there is no such node, produces None.
@@ -142,10 +144,10 @@ class BSTree:
             return None
         key_sum = 0
         if type(key) != type(1):
-            for i in key:
+            for i in key:  #type: ignore
                 key_sum = key_sum + ord(i)
         else:
-            key_sum = key
+            key_sum = int(key)
         if key_sum == start.key_sum:
             return start
         elif key_sum > start.key_sum:
@@ -153,7 +155,7 @@ class BSTree:
         else:
             return self.get_node(key,start.left)
 
-    def get_node1(self,value: T2,*args: T) -> T0:
+    def get_node1(self,value: T2,*args: Union[Node,None]) -> Union[Node, None]:
         """
         T.get_node(value,...) -> Node. Produces the Node in T with value
         attribute value. If there is no such node, produces None.
@@ -169,14 +171,14 @@ class BSTree:
         return self.get_node1(value,start.left)
         return self.get_node1(value,start.right)
 
-    def insert(self,key: T1,value: T2,*args: T) -> None:
+    def insert(self,key: T1,value: T2,*args: Union[Node, None]) -> None:
         """
         T.insert(key,value...) <==> T[key] = value. Inserts
         a new Node with key attribute key and value attribute
         value into T.
         """
-        if key == None:
-            raise TypeError("The key value cannot be None")
+        if type(key) == type(None):
+            raise TypeError("'NoneType' object is not iterable")
         elif not self.Root:
             self.Root = Node(key,value)
         elif len(args) == 0:
@@ -185,20 +187,20 @@ class BSTree:
         else:
             child = Node(key,value)
             parent = args[0]
-            if child.key_sum > parent.key_sum:
-                if not parent.right:
-                    parent.right = child
-                    child.parent = parent
+            if child.key_sum > parent.key_sum: #type: ignore
+                if not parent.right:  #type: ignore
+                    parent.right = child  #type: ignore
+                    child.parent = parent  #type: ignore
                 else:
-                    self.insert(key,value,parent.right)
+                    self.insert(key,value,parent.right)  #type: ignore
             else:
-                if not parent.left:
-                    parent.left = child
-                    child.parent = parent
+                if not parent.left:  #type: ignore
+                    parent.left = child  #type: ignore
+                    child.parent = parent  #type: ignore
                 else:
-                    self.insert(key,value,parent.left)
+                    self.insert(key,value,parent.left)  #type: ignore
 
-    def get_element_count(self,*args: T) -> int:
+    def get_element_count(self,*args: Union[Node, None]) -> int:
         """
         T.get_element_count(...) -> Nat. Produces the number of elements
         in T.
@@ -218,7 +220,7 @@ class BSTree:
         else:
             return 0
 
-    def _delete_leaf(self,node: T0) -> None:
+    def _delete_leaf(self,node: Node) -> None:
         """
         T._delete_leaf(node). Deletes node from T, treating it as a leaf.
         """
@@ -230,7 +232,7 @@ class BSTree:
                 par_node.right = None
             del node
 
-    def _delete_leaf_parent(self,node: T0) -> None:
+    def _delete_leaf_parent(self,node: Node) -> None:
         """
         T._delete_leaf_parent(node). Deletes node from T, treating it
         as a node with only one child.
@@ -244,14 +246,14 @@ class BSTree:
                 self.Root = node.left
                 node.left = None
         else:
-            if par_node.right == node:
+            if par_node.right == node:  #type: ignore
                 if node.right:
                     par_node.right = node.right
                     par_node.right.parent = par_node
                     node.right = None
                 else:
-                    par_node.right = node.left
-                    par_node.right.parent = par_node
+                    par_node.right = node.left  #type: ignore
+                    par_node.right.parent = par_node  #type: ignore
                     node.left = None
             else:
                 if node.right:
@@ -259,12 +261,12 @@ class BSTree:
                     par_node.left.parent = par_node
                     node.right = None
                 else:
-                    par_node.left = node.left
-                    par_node.left.parent = par_node
+                    par_node.left = node.left  #type: ignore
+                    par_node.left.parent = par_node  #type: ignore
                     node.left = None
         del node
 
-    def _switch_nodes(self,node1: T0,node2: T0) -> None:
+    def _switch_nodes(self,node1: Node, node2: Node) -> None:
         """
         T._switch_nodes(node1,node2). Switches positions
         of node1 and node2 in T.
@@ -275,18 +277,18 @@ class BSTree:
         temp_key_sum = switch1.key_sum
         temp_value = switch1.value
         if switch1 == self.Root:
-            self.Root.key = node2.key
-            self.Root.key_sum = node2.key_sum
-            self.Root.value = node2.value
+            self.Root.key = node2.key  #type: ignore
+            self.Root.key_sum = node2.key_sum  #type: ignore
+            self.Root.value = node2.value  #type: ignore
             switch2.key = temp_key
             switch2.key_sum = temp_key_sum
             switch2.value = temp_value
         elif switch2 == self.Root:
-            switch1.key = self.Root.key
-            switch1.key_sum = self.Root.key_sum
-            self.Root.key = temp_key
-            self.Root.key_sum = temp_key_sum
-            self.Root.value = temp_value
+            switch1.key = self.Root.key #type: ignore
+            switch1.key_sum = self.Root.key_sum  #type: ignore
+            self.Root.key = temp_key  #type: ignore
+            self.Root.key_sum = temp_key_sum  #type: ignore
+            self.Root.value = temp_value  #type: ignore
         else:
             switch1.key = node2.key
             switch1.key_sum = node2.key_sum
@@ -295,7 +297,7 @@ class BSTree:
             switch2.key_sum = temp_key_sum
             switch2.value = temp_value
 
-    def get_height(self,*args: T) -> int:
+    def get_height(self,*args) -> int:
         """
         T.get_height(...) -> Nat. Produces the height of T, defined
         as one added to the height of the tallest subtree.
@@ -309,7 +311,7 @@ class BSTree:
         else:
             return 1 + max(self.get_height(node.left), self.get_height(node.right))
 
-    def get_max(self,*args: T) -> T0:
+    def get_max(self,*args) -> Node:
         """
         T.get_max(...) -> Node. Produces the Node that has the maximum
         key attribute in T.
@@ -318,12 +320,12 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-        if not node.right:
-            return node
+        if not node.right:  #type: ignore
+            return node  #type: ignore
         else:
-            return self.get_max(node.right)
+            return self.get_max(node.right)  #type: ignore
 
-    def get_min(self,*args: T) -> T0:
+    def get_min(self,*args) -> 'Node': #type: ignore
         """
         T.get_min(...) -> Node. Produces the Node that has the minimum
         key attribute in T.
@@ -332,12 +334,12 @@ class BSTree:
             node = self.Root
         else:
             node = args[0]
-        if not node.left:
-            return node
+        if not node.left:  #type: ignore
+            return node  #type: ignore
         else:
-            return self.get_min(node.left)
+            return self.get_min(node.left)  #type: ignore
 
-    def _delete_node(self,node: T0) -> None:
+    def _delete_node(self,node: 'Node') -> None:
         """
         T._delete_node(node). Deletes node from T, treating it as
         a node with two children.

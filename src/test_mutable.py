@@ -17,7 +17,7 @@ class TestMutableList(unittest.TestCase):
         self.assertEqual(Dict_bst((1,2),('a',4)).Root.right.value, 4)
         try:  Dict_bst((None,1))
         except TypeError as e:
-            self.assertEqual(e.args[0], "The key value cannot be None")
+            self.assertEqual(e.args[0], "'NoneType' object is not iterable")
 
     def test_delete(self):
         self.assertEqual(Dict_bst(("a", 2),("ab", 4),("abc", 6)).Root.right.key, "ab")
@@ -136,7 +136,7 @@ class TestMutableList(unittest.TestCase):
     @given(st.lists(NodeStrategy))
     def test_from_list_to_list(self, arr):
         arr = self.de_duplication(arr)
-        if len(arr)>2:  arr = sorted(arr)
+        if len(arr)>1:  arr = sorted(arr)
         dict_bst = Dict_bst().from_list(arr)
         tmp_bst = dict_bst.to_list()
         if len(arr)>0:
