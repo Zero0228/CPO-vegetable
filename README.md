@@ -287,4 +287,7 @@
 > > 2. Change the exception type "TypeError" to "AttributeError".
 > > 3. Add type hints, for example:
 > > <div align=center><img src="./fig/6.png"/></div>
+> 
+> #### 6.22 update
+> > 1. check my type hints by 'mypy'
  
