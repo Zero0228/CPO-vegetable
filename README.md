@@ -170,6 +170,10 @@
 > 3. Added tests for exceptions for insert and delete function.  
 >    Returns false when inserting a key-value pair with a null key or when deleting a non-existent element. 
 > 4. Check the iterator interface. 
+> 
+>  #### 6.23 update
+>  1. Checked the type hints by mypy.
+>  
 > - ### Liu Fen:
 > 
 > #### 4.9 update
