@@ -20,8 +20,12 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(insert(None,3,'a').val, 'a')
         self.assertEqual(insert(TreeNode(3,'a'),2,'b').key,3)
         self.assertEqual(insert(TreeNode(3,'a'),2,'b').val,'a')
-        self.assertEqual(insert(TreeNode(3,'a'),None,'b'),False)
-        self.assertEqual(insert(TreeNode(3,'a'),2,None),False)
+        try: insert(TreeNode(3,'a'),None,'b')
+        except AttributeError as e:
+            self.assertEqual(e.args[0], "The element is wrong.")
+        try: insert(TreeNode(3,'a'),2,None)
+        except AttributeError as e:
+            self.assertEqual(e.args[0], "The element is wrong.")
         self.assertEqual(insert(TreeNode(3,'a'),2,'b').leftChild.key,2)
         self.assertEqual(insert(TreeNode(3,'a'),2,'b').leftChild.val,'b')
         self.assertEqual(insert(TreeNode(3,'a'),5,'c').key,3)
@@ -47,7 +51,7 @@ class TestImmutableList(unittest.TestCase):
         self.assertEqual(indict(T,2,'b'),False)
         try: delete(T,4)
         except AttributeError as e:
-            self.assertEqual(e.args[0], "The element does not exist")
+            self.assertEqual(e.args[0], "The element does not exist.")
 
     def test_tolist(self):
         T = TreeNode(3,'a',TreeNode(2,'b'),TreeNode(5,'c'))
